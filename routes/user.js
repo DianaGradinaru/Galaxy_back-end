@@ -10,10 +10,16 @@ const user = {
             });
         } else {
             const hasher = crypto.createHmac("sha256", config.salt);
+            const name = req.body.name;
+            const pass = hasher.update(req.body.password).digest("hex");
 
             db.query(
-                `insert into users (name, password) values ($1, $2) returning id;`,
-                [req.body.name, hasher.update(req.body.password).digest("hex")],
+                `
+                INSERT INTO users (name, password)
+                VALUES ($1, $2)
+                RETURNING id;
+                `,
+                [name, pass],
                 (error, result) => {
                     if (error) {
                         res.status(500).json({

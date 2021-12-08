@@ -19,6 +19,10 @@ const galaxy = {
             }
         );
     },
+    submit: (req, res) => {
+        //  <form action="" method="post" enctype="multipart/form-data"></form> // front-end
+        console.log(req.body, req.files);
+    },
 };
 
 module.exports = galaxy;

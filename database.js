@@ -9,35 +9,45 @@ const db = new DB({
     posrt: 5432,
 });
 
-//  Setup
-// db.query(
-//     `drop table if exists galaxies; create table galaxies (
-//     id serial primary key,
-//     text varchar(255),
-//     private boolean,
-//     createdAt timestamp,
-//     updatedAt timestamp
-// );`,
-//     (error, result) => {
-//         if (error) {
-//             throw error;
-//         }
-//         console.log(result);
-//     }
-// );
+function setUp() {
+    //  Setup
+    db.query(
+        `
+        DROP TABLE IF EXISTS galaxies;
+        CREATE TABLE galaxies (
+            id serial PRIMARY KEY,
+            text varchar(255),
+            private boolean,
+            createdat TIMESTAMP,
+            updatedat TIMESTAMP
+        );
+        `,
+        (error, result) => {
+            if (error) {
+                throw error;
+            }
+            console.log(result);
+        }
+    );
 
-// db.query(
-//     `drop table if exists users; create table users (
-//     id serial primary key,
-//     name varchar(255) not null,
-//     password varchar(255)
-// )`,
-//     (error, result) => {
-//         if (error) {
-//             throw error;
-//         }
-//         console.log(result);
-//     }
-// );
+    db.query(
+        `
+        DROP TABLE IF EXISTS users;
+        CREATE TABLE users (
+            id serial PRIMARY KEY,
+            name varchar(255) NOT NULL,
+            password varchar(255)
+        );
+        `,
+        (error, result) => {
+            if (error) {
+                throw error;
+            }
+            console.log(result);
+        }
+    );
+}
+
+// setUp();
 
 module.exports = db;
