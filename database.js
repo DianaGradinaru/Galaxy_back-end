@@ -17,7 +17,8 @@ function setUp() {
         CREATE TABLE galaxies (
             id serial PRIMARY KEY,
             text varchar(255),
-            private boolean,
+            image text,
+            private boolean default false,
             createdat TIMESTAMP,
             updatedat TIMESTAMP
         );
@@ -48,6 +49,6 @@ function setUp() {
     );
 }
 
-// setUp();
+setUp();
 
 module.exports = db;

@@ -21,7 +21,31 @@ const galaxy = {
     },
     submit: (req, res) => {
         //  <form action="" method="post" enctype="multipart/form-data"></form> // front-end
-        console.log(req.body, req.files);
+        if (!req.body.text) {
+            res.status(400).json({
+                error: "You need to add some text to your galaxy!",
+            });
+        } else {
+            db.query(
+                `
+            INSERT INTO galaxies (text, image)
+            VALUES ($1, $2)
+            RETURNING id;
+            `,
+                [req.body.text, req.body.image],
+                (error, result) => {
+                    if (error) {
+                        res.status(500).json({
+                            error: error,
+                        });
+                    } else {
+                        res.json({
+                            message: "Galaxy created!",
+                        });
+                    }
+                }
+            );
+        }
     },
 };
 
