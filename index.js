@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-// const multipart = require("connect-multiparty")();
+const multipart = require("connect-multiparty")();
 
 const config = require("./config");
 
@@ -14,7 +14,10 @@ const galaxy = require("./routes/galaxy");
 const user = require("./routes/user");
 
 app.get("/", galaxy.getAll);
-// app.post("/", multipart, galaxy.submit);
+app.get("/login");
+app.post("/login", user.login);
+app.get("/register");
+app.post("/", multipart, galaxy.submit);
 app.post("/register", user.register);
 
 app.listen(config.port, () => {

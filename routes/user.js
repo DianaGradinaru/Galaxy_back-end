@@ -2,24 +2,55 @@ const crypto = require("crypto");
 const config = require("../config");
 const db = require("../database");
 
+const hasher = crypto.createHmac("sha256", config.salt);
+
 const user = {
-    register: (req, res) => {
-        if (!req.body.name || !req.body.password) {
+    login: (req, res) => {
+        if (!req.body.email || !req.body.password) {
             res.status(400).json({
-                error: "Username or password missing",
+                error: "Email or password missing",
             });
         } else {
-            const hasher = crypto.createHmac("sha256", config.salt);
+            const email = req.body.email;
+            const pass = hasher.update(req.body.password).digest("hex");
+            db.query(
+                `
+                SELECT name, password FROM users
+                WHERE email = $1;
+                `,
+                [email],
+                (error, result) => {
+                    if (error) {
+                        res.status(500).json({
+                            error: error,
+                        });
+                    } else {
+                        if (pass == result.rows[0].password)
+                            res.json({
+                                message: `Login successful, ${result.rows[0].name}!`,
+                            });
+                    }
+                }
+            );
+        }
+    },
+    register: (req, res) => {
+        if (!req.body.name || !req.body.email || !req.body.password) {
+            res.status(400).json({
+                error: "Username, email or password missing",
+            });
+        } else {
             const name = req.body.name;
+            const email = req.body.email;
             const pass = hasher.update(req.body.password).digest("hex");
 
             db.query(
                 `
-                INSERT INTO users (name, password)
-                VALUES ($1, $2)
+                INSERT INTO users (name, email, password)
+                VALUES ($1, $2, $3)
                 RETURNING id;
                 `,
-                [name, pass],
+                [name, email, pass],
                 (error, result) => {
                     if (error) {
                         res.status(500).json({

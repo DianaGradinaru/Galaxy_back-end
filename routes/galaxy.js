@@ -1,9 +1,10 @@
 const db = require("../database");
+const fs = require("fs");
 
 const galaxy = {
     getAll: (req, res) => {
         db.query(
-            `select * from galaxies where private = false;`,
+            `select * from galaxies where private = false ORDER BY createdAt DESC;`,
             (error, result) => {
                 if (error) {
                     res.status(500).json({
@@ -20,28 +21,31 @@ const galaxy = {
         );
     },
     submit: (req, res) => {
-        //  <form action="" method="post" enctype="multipart/form-data"></form> // front-end
         if (!req.body.text) {
             res.status(400).json({
                 error: "You need to add some text to your galaxy!",
             });
         } else {
+            const text = req.body.text;
+            const image = req.files.file.size
+                ? fs.readFileSync(req.files.file.path).toString("base64")
+                : "";
+
             db.query(
                 `
-            INSERT INTO galaxies (text, image)
-            VALUES ($1, $2)
-            RETURNING id;
+            INSERT INTO galaxies (text, image, createdAt, updatedAt)
+            VALUES ($1, $2, now(), now())
+            RETURNING *;
             `,
-                [req.body.text, req.body.image],
+                [text, image],
                 (error, result) => {
                     if (error) {
                         res.status(500).json({
                             error: error,
                         });
                     } else {
-                        res.json({
-                            message: "Galaxy created!",
-                        });
+                        console.log(result.rows[0]);
+                        res.json(result.rows[0]);
                     }
                 }
             );
