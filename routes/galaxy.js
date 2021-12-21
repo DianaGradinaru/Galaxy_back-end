@@ -4,7 +4,11 @@ const fs = require("fs");
 const galaxy = {
     getAll: (req, res) => {
         db.query(
-            `select * from galaxies where private = false ORDER BY createdAt DESC;`,
+            `SELECT g.id, g.text, g.image, g.createdAt, u.name
+            FROM galaxies g
+            LEFT JOIN users u ON u.id = g.user_id
+            WHERE g.private = false 
+            ORDER BY createdAt DESC;`,
             (error, result) => {
                 if (error) {
                     res.status(500).json({
@@ -26,6 +30,7 @@ const galaxy = {
                 error: "You need to add some text to your galaxy!",
             });
         } else {
+            const userId = req.body.userid;
             const text = req.body.text;
             const image = req.files.file.size
                 ? fs.readFileSync(req.files.file.path).toString("base64")
@@ -33,11 +38,11 @@ const galaxy = {
 
             db.query(
                 `
-            INSERT INTO galaxies (text, image, createdAt, updatedAt)
-            VALUES ($1, $2, now(), now())
+            INSERT INTO galaxies (user_id, text, image, createdAt, updatedAt)
+            VALUES ($1, $2, $3, now(), now())
             RETURNING *;
             `,
-                [text, image],
+                [userId, text, image],
                 (error, result) => {
                     if (error) {
                         res.status(500).json({
