@@ -16,6 +16,7 @@ function setUp() {
         DROP TABLE IF EXISTS galaxies;
         CREATE TABLE galaxies (
             id serial PRIMARY KEY,
+            user_id integer,
             text varchar(255),
             image text,
             private boolean default false,

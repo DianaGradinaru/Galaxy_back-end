@@ -2,8 +2,6 @@ const crypto = require("crypto");
 const config = require("../config");
 const db = require("../database");
 
-const hasher = crypto.createHmac("sha256", config.salt);
-
 const user = {
     login: (req, res) => {
         if (!req.body.email || !req.body.password) {
@@ -11,11 +9,12 @@ const user = {
                 error: "Email or password missing",
             });
         } else {
+            const hasher = crypto.createHmac("sha256", config.salt);
             const email = req.body.email;
             const pass = hasher.update(req.body.password).digest("hex");
             db.query(
                 `
-                SELECT name, password FROM users
+                SELECT id, name, password FROM users
                 WHERE email = $1;
                 `,
                 [email],
@@ -28,6 +27,7 @@ const user = {
                         if (pass == result.rows[0].password)
                             res.json({
                                 message: `Login successful, ${result.rows[0].name}!`,
+                                user: result.rows[0],
                             });
                     }
                 }
@@ -40,6 +40,7 @@ const user = {
                 error: "Username, email or password missing",
             });
         } else {
+            const hasher = crypto.createHmac("sha256", config.salt);
             const name = req.body.name;
             const email = req.body.email;
             const pass = hasher.update(req.body.password).digest("hex");
@@ -60,6 +61,7 @@ const user = {
                         res.json({
                             message: `Created user ${req.body.name} with id ${result.rows[0].id}`,
                         });
+                        console.log(res);
                     }
                 }
             );
