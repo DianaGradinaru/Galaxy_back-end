@@ -14,11 +14,13 @@ const galaxy = require("./routes/galaxy");
 const user = require("./routes/user");
 
 app.get("/", galaxy.getAll);
-app.get("/login");
-app.post("/login", user.login);
-app.get("/register");
 app.post("/", multipart, galaxy.submit);
-app.post("/register", user.register);
+
+app.get("/login");
+app.post("/login", multipart, user.login);
+
+app.get("/register");
+app.post("/register", multipart, user.register);
 
 app.listen(config.port, () => {
     console.log(`Running on http://${config.host}:${config.port}/`);
