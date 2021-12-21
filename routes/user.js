@@ -49,7 +49,7 @@ const user = {
                 `
                 INSERT INTO users (name, email, password)
                 VALUES ($1, $2, $3)
-                RETURNING id;
+                RETURNING id, name, password;
                 `,
                 [name, email, pass],
                 (error, result) => {
@@ -60,8 +60,9 @@ const user = {
                     } else {
                         res.json({
                             message: `Created user ${req.body.name} with id ${result.rows[0].id}`,
+                            user: result.rows[0],
                         });
-                        console.log(res);
+                        console.log(result.rows[0]);
                     }
                 }
             );
