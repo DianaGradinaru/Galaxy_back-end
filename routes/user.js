@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const config = require("../config");
 const db = require("../database");
+const fs = require("fs");
 
 const user = {
     login: (req, res) => {
@@ -14,7 +15,7 @@ const user = {
             const pass = hasher.update(req.body.password).digest("hex");
             db.query(
                 `
-                SELECT id, name, password FROM users
+                SELECT id, name, password, profile_pic FROM users
                 WHERE email = $1;
                 `,
                 [email],
@@ -44,14 +45,17 @@ const user = {
             const name = req.body.name;
             const email = req.body.email;
             const pass = hasher.update(req.body.password).digest("hex");
+            const profile_pic = req.files.file.size
+                ? fs.readFileSync(req.files.file.path).toString("base64")
+                : "";
 
             db.query(
                 `
-                INSERT INTO users (name, email, password)
-                VALUES ($1, $2, $3)
-                RETURNING id, name, password;
+                INSERT INTO users (name, email, password, profile_pic)
+                VALUES ($1, $2, $3, $4)
+                RETURNING id, name, password, profile_pic;
                 `,
-                [name, email, pass],
+                [name, email, pass, profile_pic],
                 (error, result) => {
                     if (error) {
                         res.status(500).json({
@@ -62,12 +66,12 @@ const user = {
                             message: `Created user ${req.body.name} with id ${result.rows[0].id}`,
                             user: result.rows[0],
                         });
-                        console.log(result.rows[0]);
                     }
                 }
             );
         }
     },
+    profile: (req, res) => {},
 };
 
 module.exports = user;

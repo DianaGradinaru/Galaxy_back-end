@@ -4,7 +4,7 @@ const fs = require("fs");
 const galaxy = {
     getAll: (req, res) => {
         db.query(
-            `SELECT g.id, g.text, g.image, g.createdAt, u.name
+            `SELECT g.id, g.user_id, g.text, g.image, g.createdAt, u.name
             FROM galaxies g
             LEFT JOIN users u ON u.id = g.user_id
             WHERE g.private = false 
