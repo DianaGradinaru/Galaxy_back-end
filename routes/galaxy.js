@@ -24,6 +24,24 @@ const galaxy = {
             }
         );
     },
+    delete: (req, res) => {
+        db.query(
+            `
+            DELETE FROM galaxies
+            WHERE id=$1;
+            `,
+            [req.body.id],
+            (error, result) => {
+                if (error) {
+                    res.status(500).json({
+                        error: error,
+                    });
+                } else {
+                    res.json({ message: "Star deleted!" });
+                }
+            }
+        );
+    },
     submit: (req, res) => {
         if (!req.body.text) {
             res.status(400).json({

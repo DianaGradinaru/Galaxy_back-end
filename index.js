@@ -17,6 +17,8 @@ const user_info = require("./routes/userPage");
 app.get("/", galaxy.getAll);
 app.post("/", multipart, galaxy.submit);
 
+app.post("/delete", multipart, galaxy.delete);
+
 app.get("/login");
 app.post("/login", multipart, user.login);
 
