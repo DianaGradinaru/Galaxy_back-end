@@ -25,7 +25,7 @@ app.post("/login", multipart, user.login);
 app.get("/register");
 app.post("/register", multipart, user.register);
 
-app.get("/profile");
+app.get("/profile", user_info.getData);
 app.post("/profile", multipart, user_info.getData);
 
 app.listen(config.port, () => {

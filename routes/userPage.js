@@ -6,8 +6,11 @@ const user_info = {
         const id = req.body.id;
         db.query(
             `
-            SELECT id, email, password, profile_pic FROM users
-            WHERE id = $1;
+            SELECT COUNT(g.id) as count, u.id, u.email, u.password, u.profile_pic FROM users u
+            LEFT JOIN galaxies g ON u.id = g.user_id
+            WHERE u.id = $1
+            GROUP BY u.id
+            ;
             `,
             [id],
             (error, result) => {

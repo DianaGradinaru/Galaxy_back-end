@@ -15,8 +15,10 @@ const user = {
             const pass = hasher.update(req.body.password).digest("hex");
             db.query(
                 `
-                SELECT id, name, password, profile_pic FROM users
-                WHERE email = $1;
+                SELECT COUNT(g.id) as count, u.id, u.email, u.password, u.profile_pic FROM users u
+                LEFT JOIN galaxies g ON u.id = g.user_id
+                WHERE u.email = $1
+                GROUP BY u.id
                 `,
                 [email],
                 (error, result) => {

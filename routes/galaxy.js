@@ -7,8 +7,15 @@ const galaxy = {
             `SELECT g.id, g.user_id, g.text, g.image, g.createdAt, u.name
             FROM galaxies g
             LEFT JOIN users u ON u.id = g.user_id
-            WHERE g.private = false 
+            WHERE g.private = false
             ORDER BY createdAt DESC;`,
+            // `SELECT g.id, g.user_id, g.text, g.image, g.createdAt, u.name
+            // FROM galaxies g
+            // LEFT JOIN users u ON u.id = g.user_id
+            // WHERE g.private = false
+            // ORDER BY createdAt DESC
+            // OFFSET 5
+            // LIMIT 5`,
             (error, result) => {
                 if (error) {
                     res.status(500).json({
