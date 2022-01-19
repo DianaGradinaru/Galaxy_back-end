@@ -25,8 +25,11 @@ app.post("/login", multipart, user.login);
 app.get("/register");
 app.post("/register", multipart, user.register);
 
-app.get("/profile", user_info.getData);
-app.post("/profile", multipart, user_info.getData);
+app.get("/profile", user.profile);
+app.post("/profile", multipart, user.profile);
+
+app.get("/profile/myPosts", user.myPosts);
+app.post("/profile/myPosts", multipart, user.myPosts);
 
 app.listen(config.port, () => {
     console.log(`Running on http://${config.host}:${config.port}/`);

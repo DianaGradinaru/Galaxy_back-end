@@ -15,7 +15,7 @@ const user = {
             const pass = hasher.update(req.body.password).digest("hex");
             db.query(
                 `
-                SELECT COUNT(g.id) as count, u.id, u.email, u.password, u.profile_pic FROM users u
+                SELECT COUNT(g.id) as count, u.id, u.email, u.password, u.name, u.profile_pic FROM users u
                 LEFT JOIN galaxies g ON u.id = g.user_id
                 WHERE u.email = $1
                 GROUP BY u.id
@@ -73,7 +73,51 @@ const user = {
             );
         }
     },
-    profile: (req, res) => {},
+    profile: (req, res) => {
+        const id = req.body.id;
+        db.query(
+            `
+            SELECT COUNT(g.id) as count, u.id, u.email, u.password, u.profile_pic FROM users u
+            LEFT JOIN galaxies g ON u.id = g.user_id
+            WHERE u.id = $1
+            GROUP BY u.id
+            ;
+            `,
+            [id],
+            (error, result) => {
+                if (error) {
+                    res.status(500).json({
+                        error: error,
+                    });
+                } else {
+                    res.json({
+                        user: result.rows[0],
+                    });
+                }
+            }
+        );
+    },
+    myPosts: (req, res) => {
+        const id = req.body.id;
+        db.query(
+            `SELECT g.id, g.user_id, g.text, g.image, g.createdAt, u.name
+            FROM galaxies g
+            LEFT JOIN users u ON u.id = g.user_id
+            WHERE u.id = $1
+            ORDER BY createdAt DESC
+            ;`,
+            [id],
+            (error, result) => {
+                if (error) {
+                    res.status(500).json({
+                        error: error,
+                    });
+                } else {
+                    res.json(result.rows);
+                }
+            }
+        );
+    },
 };
 
 module.exports = user;
