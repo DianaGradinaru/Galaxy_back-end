@@ -50,6 +50,23 @@ function setUp() {
             console.log(result);
         }
     );
+
+    db.query(
+        `
+        DROP TABLE IF EXISTS favorites;
+        CREATE TABLE favorites (
+            id serial PRIMARY KEY,
+            favorited_by integer,
+            star_id integer
+        );
+    `,
+        (error, result) => {
+            if (error) {
+                throw error;
+            }
+            console.log(result);
+        }
+    );
 }
 
 // setUp();

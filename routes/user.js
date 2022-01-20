@@ -118,6 +118,30 @@ const user = {
             }
         );
     },
+    favorites: (req, res) => {
+        // const favorited_by = req.body.favorited_by;
+        // const star_id = req.body.star_id;
+        const { favorited_by, star_id } = req.body;
+        db.query(
+            `
+            INSERT INTO favorites (favorited_by, star_id)
+            VALUES ($1, $2)
+            RETURNING id, favorited_by, star_id;
+            `,
+            [favorited_by, star_id],
+            (error, result) => {
+                if (error) {
+                    res.status(500).json({
+                        error: error,
+                    });
+                } else {
+                    res.json({
+                        message: `Star added to your favorites!`,
+                    });
+                }
+            }
+        );
+    },
 };
 
 module.exports = user;

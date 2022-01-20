@@ -31,6 +31,9 @@ app.post("/profile", multipart, user.profile);
 app.get("/profile/myPosts", user.myPosts);
 app.post("/profile/myPosts", multipart, user.myPosts);
 
+app.get("/profile/favorites", user.favorites);
+app.post("/profile/favorites", multipart, user.favorites);
+
 app.listen(config.port, () => {
     console.log(`Running on http://${config.host}:${config.port}/`);
 });
