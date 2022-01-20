@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const config = require("../config");
 const db = require("../database");
 const fs = require("fs");
+const { connect } = require("http2");
 
 const user = {
     login: (req, res) => {
@@ -142,16 +143,15 @@ const user = {
     },
     getFavorites: (req, res) => {
         const { id } = req.body;
-        console.log(req.body);
         db.query(
             `
             SELECT f.favorited_by AS favorited_by_id,
                 v.name AS favorited_by_name,
                 u.id AS author_id,
-                u.name AS author_name,
+                u.name AS name,
                 g.id AS star_id,
                 g.text,
-                g.createdAt AS created,
+                g.createdAt AS createdat,
                 g.image
             FROM favorites f
             LEFT JOIN galaxies g ON g.id = f.star_id
