@@ -145,20 +145,21 @@ const user = {
         const { id } = req.body;
         db.query(
             `
-            SELECT f.favorited_by AS favorited_by_id,
-                v.name AS favorited_by_name,
-                u.id AS author_id,
-                u.name AS name,
-                g.id AS star_id,
-                g.text,
-                g.createdAt AS createdat,
-                g.image
-            FROM favorites f
-            LEFT JOIN galaxies g ON g.id = f.star_id
-            LEFT JOIN users u ON u.id = g.user_id
-            LEFT JOIN users v ON v.id = f.favorited_by
-            WHERE f.favorited_by = $1;
-            `,
+SELECT DISTINCT f.favorited_by AS favorited_by_id,
+       v.name AS favorited_by_name,
+       u.id AS author_id,
+       u.name,
+       g.id,
+       g.text,
+       g.createdAt,
+       g.image
+FROM favorites f
+LEFT JOIN galaxies g ON g.id = f.star_id
+LEFT JOIN users u ON u.id = g.user_id
+LEFT JOIN users v ON v.id = f.favorited_by
+WHERE f.favorited_by = $1
+ORDER BY g.id DESC;
+`,
             [id],
             (error, result) => {
                 console.log(result);
