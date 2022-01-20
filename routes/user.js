@@ -118,9 +118,7 @@ const user = {
             }
         );
     },
-    favorites: (req, res) => {
-        // const favorited_by = req.body.favorited_by;
-        // const star_id = req.body.star_id;
+    addFavorites: (req, res) => {
         const { favorited_by, star_id } = req.body;
         db.query(
             `
@@ -138,6 +136,38 @@ const user = {
                     res.json({
                         message: `Star added to your favorites!`,
                     });
+                }
+            }
+        );
+    },
+    getFavorites: (req, res) => {
+        const { id } = req.body;
+        console.log(req.body);
+        db.query(
+            `
+            SELECT f.favorited_by AS favorited_by_id,
+                v.name AS favorited_by_name,
+                u.id AS author_id,
+                u.name AS author_name,
+                g.id AS star_id,
+                g.text,
+                g.createdAt AS created,
+                g.image
+            FROM favorites f
+            LEFT JOIN galaxies g ON g.id = f.star_id
+            LEFT JOIN users u ON u.id = g.user_id
+            LEFT JOIN users v ON v.id = f.favorited_by
+            WHERE f.favorited_by = $1;
+            `,
+            [id],
+            (error, result) => {
+                console.log(result);
+                if (error) {
+                    res.status(500).json({
+                        error: error,
+                    });
+                } else {
+                    res.json(result.rows);
                 }
             }
         );
