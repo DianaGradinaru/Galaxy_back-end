@@ -18,6 +18,7 @@ app.get("/", galaxy.getAll);
 app.post("/", multipart, galaxy.submit);
 
 app.post("/delete", multipart, galaxy.delete);
+// app.post("/delete/user_id/star_id", multipart, galaxy.delete);
 
 app.get("/login");
 app.post("/login", multipart, user.login);
@@ -33,6 +34,9 @@ app.post("/profile/myPosts", multipart, user.myPosts);
 
 app.post("/profile/favorites", multipart, user.getFavorites);
 app.post("/profile/favorites/add", multipart, user.addFavorites);
+
+app.post("/profile/favorites", user.removeFavorites);
+app.post("/profile/favorites/remove", user.removeFavorites);
 
 app.listen(config.port, () => {
     console.log(`Running on http://${config.host}:${config.port}/`);

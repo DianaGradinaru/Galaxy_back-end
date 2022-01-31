@@ -6,7 +6,7 @@ const db = new DB({
     host: config.host,
     database: config.dbname,
     password: config.dbpass,
-    posrt: 5432,
+    port: 5432,
 });
 
 function setUp() {
