@@ -67,7 +67,7 @@ const galaxy = {
                             error: error,
                         });
                     } else {
-                        console.log(result.rows[0]);
+                        // console.log(result.rows[0]);
                         res.json(result.rows[0]);
                     }
                 }

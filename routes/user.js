@@ -183,7 +183,7 @@ const user = {
             `,
             [id],
             (error, result) => {
-                console.log(result);
+                // console.log(result);
                 if (error) {
                     res.status(500).json({
                         error: error,
