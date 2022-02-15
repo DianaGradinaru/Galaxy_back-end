@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const multipart = require("connect-multiparty")();
 const http = require("http");
 const { Server, Socket } = require("socket.io");
+require("dotenv").config();
 
 const config = require("./config");
 
@@ -22,6 +23,9 @@ app.post("/", multipart, galaxy.submit);
 
 app.post("/delete", multipart, galaxy.delete);
 // app.post("/delete/user_id/star_id", multipart, galaxy.delete);
+
+app.get("/", multipart, galaxy.uploadImage);
+app.post("/", multipart, galaxy.uploadImage);
 
 app.get("/login");
 app.post("/login", multipart, user.login);

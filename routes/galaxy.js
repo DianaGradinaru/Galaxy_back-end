@@ -1,5 +1,6 @@
 const db = require("../database");
 const fs = require("fs");
+const fileUploader = require("../configs/cloudinary.config");
 
 const galaxy = {
     getAll: (req, res) => {
@@ -50,9 +51,10 @@ const galaxy = {
         } else {
             const userId = req.body.userid;
             const text = req.body.text;
-            const image = req.files.file.size
-                ? fs.readFileSync(req.files.file.path).toString("base64")
-                : "";
+            // const image = req.files.file.size
+            //     ? fs.readFileSync(req.files.file.path).toString("base64")
+            //     : "";
+            const image = "";
 
             db.query(
                 `
@@ -74,6 +76,15 @@ const galaxy = {
             );
         }
     },
+    uploadImage:
+        (fileUploader.single("file"),
+        (req, res, next) => {
+            if (!req.file) {
+                next(new Error("No file uploaded!"));
+                return;
+            }
+            res.json({ secure_url: req.file.path });
+        }),
 };
 
 module.exports = galaxy;
