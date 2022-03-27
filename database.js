@@ -31,7 +31,6 @@ function setUp() {
     //         // console.log(result);
     //     }
     // );
-
     // db.query(
     //     `
     //     DROP TABLE IF EXISTS users;
@@ -50,7 +49,6 @@ function setUp() {
     //         // console.log(result);
     //     }
     // );
-
     // db.query(
     //     `
     //     DROP TABLE IF EXISTS favorites;
@@ -67,19 +65,38 @@ function setUp() {
     //         // console.log(result);
     //     }
     // );
+    // db.query(
+    //     `
+    //     DROP TABLE IF EXISTS messaging;
+    //     CREATE TABLE messaging (
+    //         id serial PRIMARY KEY,
+    //         author varchar(255) NOT NULL,
+    //         user_id integer NOT NULL,
+    //         room varchar(255) NOT NULL,
+    //         message varchar(255) NOT NULL,
+    //         time TIMESTAMP
+    //     );
+    // `,
+    //     (error, result) => {
+    //         if (error) {
+    //             throw error;
+    //         }
+    //         // console.log(result);
+    //     }
+    // );
 
     db.query(
         `
-        DROP TABLE IF EXISTS messaging;
-        CREATE TABLE messaging (
+        DROP TABLE IF EXISTS replies;
+        CREATE TABLE replies (
             id serial PRIMARY KEY,
-            author varchar(255) NOT NULL,
-            user_id integer NOT NULL,
-            room varchar(255) NOT NULL,
-            message varchar(255) NOT NULL,
-            time TIMESTAMP
+    	    star_id integer,
+            reply_user_id integer,
+            reply_user_name varchar(255),
+            reply_text varchar(255),
+            createdat TIMESTAMP
         );
-    `,
+        `,
         (error, result) => {
             if (error) {
                 throw error;

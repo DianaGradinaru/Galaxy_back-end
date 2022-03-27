@@ -16,9 +16,13 @@ const galaxy = require("./routes/galaxy");
 const user = require("./routes/user");
 // const user_info = require("./routes/userPage");
 const messages = require("./routes/messages");
+const replies = require("./routes/replies");
 
 app.get("/", galaxy.getAll);
 app.post("/", multipart, galaxy.submit);
+
+app.get("/replies", multipart, replies.addReply);
+app.post("/replies", multipart, replies.addReply);
 
 app.post("/delete", multipart, galaxy.delete);
 // app.post("/delete/user_id/star_id", multipart, galaxy.delete);
