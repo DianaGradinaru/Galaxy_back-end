@@ -28,11 +28,17 @@ const user = {
                             error: error,
                         });
                     } else {
-                        if (pass == result.rows[0].password)
+                        console.log(result);
+                        if (pass == result.rows[0].password) {
                             res.json({
                                 message: `Login successful, ${result.rows[0].name}!`,
                                 user: result.rows[0],
                             });
+                        } else {
+                            res.json({
+                                message: "Wrong password",
+                            });
+                        }
                     }
                 }
             );
