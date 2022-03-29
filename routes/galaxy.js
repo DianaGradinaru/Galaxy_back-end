@@ -26,6 +26,12 @@ const galaxy = {
             }
         );
     },
+    // getImage: (req, res) => {
+    //     const key = req.params.key;
+    //     const readStream = getFileStream(key);
+
+    //     readStream.pipe(res);
+    // },
     delete: (req, res) => {
         db.query(
             `
@@ -53,6 +59,7 @@ const galaxy = {
             const userId = req.body.userid;
             const text = req.body.text;
             const image = req.file;
+            console.log("image:");
             console.log(image);
 
             let file = "";
@@ -61,7 +68,10 @@ const galaxy = {
             }
 
             const result = await uploadFile(image);
+            console.log("result:");
             console.log(result);
+            console.log(result.Key);
+            // res.send({ imagePath: `/${result.key}` });
 
             db.query(
                 `
@@ -76,7 +86,6 @@ const galaxy = {
                             error: error,
                         });
                     } else {
-                        // console.log(result.rows[0]);
                         res.json(result.rows[0]);
                     }
                 }

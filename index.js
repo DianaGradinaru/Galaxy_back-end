@@ -19,19 +19,18 @@ const app = express()
 
 const galaxy = require("./routes/galaxy");
 const user = require("./routes/user");
-// const user_info = require("./routes/userPage");
 const messages = require("./routes/messages");
 const replies = require("./routes/replies");
 const res = require("express/lib/response");
 
 app.get("/", galaxy.getAll);
+// app.get("/:key", galaxy.getImage);
 app.post("/", upload.single("image"), galaxy.submit);
 
 app.get("/replies", multipart, replies.addReply);
 app.post("/replies", multipart, replies.addReply);
 
 app.post("/delete", multipart, galaxy.delete);
-// app.post("/delete/user_id/star_id", multipart, galaxy.delete);
 
 app.get("/login");
 app.post("/login", multipart, user.login);
@@ -53,13 +52,6 @@ app.post("/profile/favorites/remove", user.removeFavorites);
 
 app.get("/messages", multipart, messages.addMessage);
 app.post("/messages", multipart, messages.addMessage);
-
-// multer
-// app.post("/",  (req, res) => {
-//     const file = req.file;
-//     console.log(file);
-//     res.send("okay");
-// });
 
 app.listen(config.port, () => {
     console.log(`Running on http://${config.host}:${config.port}/`);
