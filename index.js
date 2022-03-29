@@ -24,7 +24,7 @@ const replies = require("./routes/replies");
 const res = require("express/lib/response");
 
 app.get("/", galaxy.getAll);
-// app.get("/:key", galaxy.getImage);
+app.get("/:key", galaxy.getImage);
 app.post("/", upload.single("image"), galaxy.submit);
 
 app.get("/replies", multipart, replies.addReply);

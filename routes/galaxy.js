@@ -1,7 +1,7 @@
 const db = require("../database");
 const fs = require("fs");
 
-const { uploadFile } = require("../s3");
+const { uploadFile, getFileStream } = require("../s3");
 
 const galaxy = {
     getAll: (req, res) => {
@@ -26,12 +26,14 @@ const galaxy = {
             }
         );
     },
-    // getImage: (req, res) => {
-    //     const key = req.params.key;
-    //     const readStream = getFileStream(key);
+    getImage: (req, res) => {
+        console.log("req.params");
+        console.log(req.params);
+        const key = req.params.key;
+        const readStream = getFileStream(key);
 
-    //     readStream.pipe(res);
-    // },
+        readStream.pipe(res);
+    },
     delete: (req, res) => {
         db.query(
             `
@@ -59,19 +61,7 @@ const galaxy = {
             const userId = req.body.userid;
             const text = req.body.text;
             const image = req.file;
-            console.log("image:");
-            console.log(image);
-
-            let file = "";
-            if (image) {
-                file = image.path.replace(/^public\//gim, "");
-            }
-
             const result = await uploadFile(image);
-            console.log("result:");
-            console.log(result);
-            console.log(result.Key);
-            // res.send({ imagePath: `/${result.key}` });
 
             db.query(
                 `
@@ -79,7 +69,7 @@ const galaxy = {
             VALUES ($1, $2, $3, now(), now())
             RETURNING *;
             `,
-                [userId, text, file],
+                [userId, text, result.Key],
                 (error, result) => {
                     if (error) {
                         res.status(500).json({
