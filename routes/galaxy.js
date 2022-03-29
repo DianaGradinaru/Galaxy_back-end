@@ -1,5 +1,7 @@
 const db = require("../database");
 const fs = require("fs");
+const util = require("util");
+const deleteFile = util.promisify(fs.unlink);
 
 const { uploadFile, getFileStream } = require("../s3");
 
@@ -62,6 +64,8 @@ const galaxy = {
             const text = req.body.text;
             const image = req.file;
             const result = await uploadFile(image);
+
+            await deleteFile(req.file.path);
 
             db.query(
                 `
