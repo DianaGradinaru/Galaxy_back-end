@@ -1,6 +1,8 @@
 const db = require("../database");
 const fs = require("fs");
 
+const { uploadFile } = require("../s3");
+
 const galaxy = {
     getAll: (req, res) => {
         db.query(
@@ -42,7 +44,7 @@ const galaxy = {
             }
         );
     },
-    submit: (req, res) => {
+    submit: async (req, res) => {
         if (!req.body.text) {
             res.status(400).json({
                 error: "You need to add some text to your galaxy!",
@@ -50,9 +52,16 @@ const galaxy = {
         } else {
             const userId = req.body.userid;
             const text = req.body.text;
-            const image = req.files.file.size
-                ? fs.readFileSync(req.files.file.path).toString("base64")
-                : "";
+            const image = req.file;
+            console.log(image);
+
+            let file = "";
+            if (image) {
+                file = image.path.replace(/^public\//gim, "");
+            }
+
+            const result = await uploadFile(image);
+            console.log(result);
 
             db.query(
                 `
@@ -60,7 +69,7 @@ const galaxy = {
             VALUES ($1, $2, $3, now(), now())
             RETURNING *;
             `,
-                [userId, text, image],
+                [userId, text, file],
                 (error, result) => {
                     if (error) {
                         res.status(500).json({

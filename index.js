@@ -5,10 +5,15 @@ const multipart = require("connect-multiparty")();
 const http = require("http");
 const { Server, Socket } = require("socket.io");
 
+// multer
+const multer = require("multer");
+const upload = multer({ dest: "public/uploads/" });
+
 const config = require("./config");
 
 const app = express()
     .use(cors())
+    .use(express.static("public"))
     .use(bodyParser.json()) //express.json
     .use(bodyParser.urlencoded({ extended: true })); //express.urlencoded
 
@@ -17,9 +22,10 @@ const user = require("./routes/user");
 // const user_info = require("./routes/userPage");
 const messages = require("./routes/messages");
 const replies = require("./routes/replies");
+const res = require("express/lib/response");
 
 app.get("/", galaxy.getAll);
-app.post("/", multipart, galaxy.submit);
+app.post("/", upload.single("image"), galaxy.submit);
 
 app.get("/replies", multipart, replies.addReply);
 app.post("/replies", multipart, replies.addReply);
@@ -47,6 +53,13 @@ app.post("/profile/favorites/remove", user.removeFavorites);
 
 app.get("/messages", multipart, messages.addMessage);
 app.post("/messages", multipart, messages.addMessage);
+
+// multer
+// app.post("/",  (req, res) => {
+//     const file = req.file;
+//     console.log(file);
+//     res.send("okay");
+// });
 
 app.listen(config.port, () => {
     console.log(`Running on http://${config.host}:${config.port}/`);
