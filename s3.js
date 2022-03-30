@@ -31,14 +31,12 @@ exports.uploadFile = uploadFile;
 
 // downloads file from S3
 function getFileStream(fileKey) {
-    // if (fileKey) {
     const downloadParams = {
         Key: fileKey,
         Bucket: bucketName,
     };
 
     return s3.getObject(downloadParams).createReadStream();
-    // }
 }
 
 exports.getFileStream = getFileStream;
