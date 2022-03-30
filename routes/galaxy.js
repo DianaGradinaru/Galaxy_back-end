@@ -68,27 +68,48 @@ const galaxy = {
             const userId = req.body.userid;
             const text = req.body.text;
             const image = req.file;
-            const result = await uploadFile(image);
+            console.log(req.file == null);
+            if (req.file != null) {
+                const result = await uploadFile(image);
 
-            await deleteFile(req.file.path);
+                await deleteFile(req.file.path);
 
-            db.query(
-                `
-            INSERT INTO galaxies (user_id, text, image, createdAt, updatedAt)
-            VALUES ($1, $2, $3, now(), now())
-            RETURNING *;
-            `,
-                [userId, text, result.Key],
-                (error, result) => {
-                    if (error) {
-                        res.status(500).json({
-                            error: error,
-                        });
-                    } else {
-                        res.json(result.rows[0]);
+                db.query(
+                    `
+                INSERT INTO galaxies (user_id, text, image, createdAt, updatedAt)
+                VALUES ($1, $2, $3, now(), now())
+                RETURNING *;
+                `,
+                    [userId, text, result.Key],
+                    (error, result) => {
+                        if (error) {
+                            res.status(500).json({
+                                error: error,
+                            });
+                        } else {
+                            res.json(result.rows[0]);
+                        }
                     }
-                }
-            );
+                );
+            } else {
+                db.query(
+                    `
+                INSERT INTO galaxies (user_id, text, createdAt, updatedAt)
+                VALUES ($1, $2, now(), now())
+                RETURNING *;
+                `,
+                    [userId, text],
+                    (error, result) => {
+                        if (error) {
+                            res.status(500).json({
+                                error: error,
+                            });
+                        } else {
+                            res.json(result.rows[0]);
+                        }
+                    }
+                );
+            }
         }
     },
 };

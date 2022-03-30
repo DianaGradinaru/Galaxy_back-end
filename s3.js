@@ -42,12 +42,14 @@ function getFileStream(fileKey) {
 exports.getFileStream = getFileStream;
 
 function deleteObject(fileKey) {
-    const params = {
-        Bucket: bucketName,
-        Key: fileKey,
-    };
+    if (fileKey) {
+        const params = {
+            Bucket: bucketName,
+            Key: fileKey,
+        };
 
-    return s3.deleteObject(params).promise();
+        return s3.deleteObject(params).promise();
+    }
 }
 
 exports.deleteObject = deleteObject;
