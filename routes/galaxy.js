@@ -3,7 +3,7 @@ const fs = require("fs");
 const util = require("util");
 const deleteFile = util.promisify(fs.unlink);
 
-const { uploadFile, getFileStream } = require("../s3");
+const { uploadFile, getFileStream, deleteObject } = require("../s3");
 
 const galaxy = {
     getAll: (req, res) => {
@@ -36,7 +36,12 @@ const galaxy = {
 
         readStream.pipe(res);
     },
-    delete: (req, res) => {
+    delete: async (req, res) => {
+        const key = req.body.image;
+        console.log("req body image");
+        console.log(req.body.image);
+        await deleteObject(key);
+
         db.query(
             `
             DELETE FROM galaxies

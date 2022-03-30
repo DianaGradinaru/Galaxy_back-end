@@ -30,7 +30,7 @@ app.post("/", upload.single("image"), galaxy.submit);
 app.get("/replies", multipart, replies.addReply);
 app.post("/replies", multipart, replies.addReply);
 
-app.post("/delete", multipart, galaxy.delete);
+app.post("/delete", galaxy.delete);
 
 app.get("/login");
 app.post("/login", multipart, user.login);
