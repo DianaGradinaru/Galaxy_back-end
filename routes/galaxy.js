@@ -1,5 +1,9 @@
 const db = require("../database");
 const fs = require("fs");
+const util = require("util");
+const deleteFile = util.promisify(fs.unlink);
+
+const { uploadFile, getFileStream, deleteObject } = require("../s3");
 
 const galaxy = {
     getAll: (req, res) => {
@@ -24,7 +28,20 @@ const galaxy = {
             }
         );
     },
-    delete: (req, res) => {
+    getImage: (req, res) => {
+        console.log("req.params");
+        console.log(req.params);
+        const key = req.params.key;
+        const readStream = getFileStream(key);
+
+        readStream.pipe(res);
+    },
+    delete: async (req, res) => {
+        const key = req.body.image;
+        console.log("req body image");
+        console.log(req.body.image);
+        await deleteObject(key);
+
         db.query(
             `
             DELETE FROM galaxies
@@ -42,7 +59,7 @@ const galaxy = {
             }
         );
     },
-    submit: (req, res) => {
+    submit: async (req, res) => {
         if (!req.body.text) {
             res.status(400).json({
                 error: "You need to add some text to your galaxy!",
@@ -50,28 +67,49 @@ const galaxy = {
         } else {
             const userId = req.body.userid;
             const text = req.body.text;
-            const image = req.files.file.size
-                ? fs.readFileSync(req.files.file.path).toString("base64")
-                : "";
+            const image = req.file;
+            console.log(req.file == null);
+            if (req.file != null) {
+                const result = await uploadFile(image);
 
-            db.query(
-                `
-            INSERT INTO galaxies (user_id, text, image, createdAt, updatedAt)
-            VALUES ($1, $2, $3, now(), now())
-            RETURNING *;
-            `,
-                [userId, text, image],
-                (error, result) => {
-                    if (error) {
-                        res.status(500).json({
-                            error: error,
-                        });
-                    } else {
-                        console.log(result.rows[0]);
-                        res.json(result.rows[0]);
+                await deleteFile(req.file.path);
+
+                db.query(
+                    `
+                INSERT INTO galaxies (user_id, text, image, createdAt, updatedAt)
+                VALUES ($1, $2, $3, now(), now())
+                RETURNING *;
+                `,
+                    [userId, text, result.Key],
+                    (error, result) => {
+                        if (error) {
+                            res.status(500).json({
+                                error: error,
+                            });
+                        } else {
+                            res.json(result.rows[0]);
+                        }
                     }
-                }
-            );
+                );
+            } else {
+                db.query(
+                    `
+                INSERT INTO galaxies (user_id, text, createdAt, updatedAt)
+                VALUES ($1, $2, now(), now())
+                RETURNING *;
+                `,
+                    [userId, text],
+                    (error, result) => {
+                        if (error) {
+                            res.status(500).json({
+                                error: error,
+                            });
+                        } else {
+                            res.json(result.rows[0]);
+                        }
+                    }
+                );
+            }
         }
     },
 };
