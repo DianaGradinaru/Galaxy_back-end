@@ -21,7 +21,6 @@ const galaxy = require("./routes/galaxy");
 const user = require("./routes/user");
 const messages = require("./routes/messages");
 const replies = require("./routes/replies");
-const res = require("express/lib/response");
 
 app.get("/", galaxy.getAll);
 app.get("/:key", galaxy.getImage);

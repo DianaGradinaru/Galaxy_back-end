@@ -1,9 +1,10 @@
 const db = require("../database");
+
 const fs = require("fs");
 const util = require("util");
 const deleteFile = util.promisify(fs.unlink);
 
-const { uploadFile, getFileStream, deleteObject } = require("../s3");
+const { uploadFile, getFileStream, deleteObject, getFile } = require("../s3");
 
 const galaxy = {
     getAll: (req, res) => {
@@ -19,7 +20,6 @@ const galaxy = {
                         error: error,
                     });
                 }
-
                 if (!result.rowCount) {
                     res.json({ message: "No entries found" });
                 } else {
@@ -28,19 +28,20 @@ const galaxy = {
             }
         );
     },
-    getImage: (req, res) => {
-        console.log("req.params");
-        console.log(req.params);
+    getImage: async (req, res) => {
+        // console.log("req.params");
+        // console.log(req.params);
         const key = req.params.key;
-        const readStream = getFileStream(key);
-
-        readStream.pipe(res);
+        // const readStream = getFileStream(key);
+        // readStream.pipe(res);
+        const url = await getFile(key);
+        res.json({ url });
     },
     delete: async (req, res) => {
         const key = req.body.image;
         console.log("req body image");
         console.log(req.body.image);
-        await deleteObject(key);
+        // await deleteObject(key);
 
         db.query(
             `
@@ -68,9 +69,11 @@ const galaxy = {
             const userId = req.body.userid;
             const text = req.body.text;
             const image = req.file;
+            console.log("req.file");
+            console.log(req.file);
+
             let query;
             let options;
-            // console.log(req.file == null);
             if (req.file != null) {
                 const result = await uploadFile(image);
 
@@ -80,7 +83,7 @@ const galaxy = {
                 VALUES ($1, $2, $3, now(), now())
                 RETURNING *;
                 `;
-                options = [userId, text, result.Key];
+                options = [userId, text, image.filename];
             } else {
                 query = `
                 INSERT INTO galaxies (user_id, text, createdAt, updatedAt)
