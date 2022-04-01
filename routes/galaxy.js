@@ -29,18 +29,19 @@ const galaxy = {
         );
     },
     getImage: async (req, res) => {
-        // console.log("req.params");
-        // console.log(req.params);
+        console.log("req.params");
+        console.log(req.params);
         const key = req.params.key;
         // const readStream = getFileStream(key);
         // readStream.pipe(res);
         const url = await getFile(key);
+        console.log(url);
         res.json({ url });
     },
     delete: async (req, res) => {
         const key = req.body.image;
-        console.log("req body image");
-        console.log(req.body.image);
+        // console.log("req body image");
+        // console.log(req.body.image);
         // await deleteObject(key);
 
         db.query(
