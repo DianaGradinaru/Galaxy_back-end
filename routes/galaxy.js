@@ -1,4 +1,5 @@
 const db = require("../database");
+const mime = require("mime-types")
 
 const fs = require("fs");
 const util = require("util");
@@ -29,14 +30,13 @@ const galaxy = {
         );
     },
     getImage: async (req, res) => {
-        console.log("req.params");
-        console.log(req.params);
         const key = req.params.key;
+        console.log("req.params.key");
+        console.log(req.params.key);
+
         // const readStream = getFileStream(key);
         // readStream.pipe(res);
-        const url = await getFile(key);
-        console.log(url);
-        res.json({ url });
+        res.json({ key });
     },
     delete: async (req, res) => {
         const key = req.body.image;
@@ -84,7 +84,7 @@ const galaxy = {
                 VALUES ($1, $2, $3, now(), now())
                 RETURNING *;
                 `;
-                options = [userId, text, image.filename];
+                options = [userId, text, image.filename + "." + mime.extension(image.mimetype)];
             } else {
                 query = `
                 INSERT INTO galaxies (user_id, text, createdAt, updatedAt)

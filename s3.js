@@ -1,4 +1,5 @@
 require("dotenv").config();
+const mime = require("mime-types")
 const fs = require("fs");
 
 const {
@@ -23,7 +24,7 @@ const client = new S3Client({
 async function uploadFile(file) {
     const uploadParams = {
         Bucket: bucketName,
-        Key: file.filename,
+        Key: file.filename + "." + mime.extension(file.mimetype),
         Body: fs.createReadStream(file.path),
     };
     try {
